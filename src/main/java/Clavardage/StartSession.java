@@ -1,8 +1,10 @@
 package Clavardage;
 import BDD.BDD;
-
+import BDD.Insert;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Scanner;
 
 public class StartSession {
@@ -25,6 +27,7 @@ public class StartSession {
                 };
                 System.out.println(MsgRecu);
                 MsgRecu = client.rcvMessage();
+                //ListeMsg.addMsg(new Message("Juan",msg, new Timestamp(date.getTime())));
             }
 
 
@@ -36,19 +39,28 @@ public class StartSession {
     }
 
     public static void StartSession(InetAddress addr) throws IOException{
-        BDD.createNewTable("Juan");
+
+        BDD.createNewTable("Adama");
+        ListOfMessages ListeMsg= new ListOfMessages();
         Scanner entreeClavier = new Scanner(System.in);
         clientTCP client = new clientTCP();
         client.startConnexion(addr, 1769);
+
         client.sendMessage("hello dude");
         String response = client.rcvMessage();
-        System.out.println(response);
+        System.out.println(addr.toString()+" : "+response);
+
+        Insert app = new Insert();
+
         ClientEcoute Oreille = new ClientEcoute(client);
         Oreille.start();
         String msg;
         while(!Oreille.isInterrupted() ^ !Oreille.isAlive()){
             msg = entreeClavier.nextLine();
             client.sendMessage(msg);
+            Date date = new Date();
+            app.insert("ADAMA",new Message(addr.getHostAddress(), msg,new Timestamp(date.getTime())) );
+            //ListeMsg.addMsg(new Message("Juan",msg, new Timestamp(date.getTime())));
             if(msg.equals("end1")){
                 Oreille.interrupt();
             }

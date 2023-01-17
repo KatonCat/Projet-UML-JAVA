@@ -1,6 +1,8 @@
 package Clavardage;
 
+import BDD.BDD;
 import BDD.CreateBDD;
+import BDD.Insert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Scanner;
 
 public class MultiServeurTCP {
@@ -48,10 +52,14 @@ public class MultiServeurTCP {
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     String msgRecu;
 
+                    Insert app = new Insert();
+
+
                     while (!this.isInterrupted()) {
 
                         if ((msgRecu = in.readLine()) == null) break;
-
+                        Date date = new Date();
+                        app.insert("Pascal",new Message("PASCAL", msgRecu,new Timestamp(date.getTime())) );
 
                         System.out.println(msgRecu);
                         if ("hello dude".equals(msgRecu)) {
@@ -76,15 +84,23 @@ public class MultiServeurTCP {
 
 
         public void init() throws IOException {
+            BDD.createNewTable("Pascal");
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ServEcoute Oreille = new ServEcoute(clientSocket,out);
             Oreille.start();
             Scanner entreeClavier = new Scanner(System.in);
+
+            Insert app = new Insert();
+            Date date = new Date();
+
             String Smsg;
+
+
             while (!Oreille.isInterrupted()) {
                 Smsg = entreeClavier.nextLine();
                  out.println(Smsg);
+                app.insert("Pascal",new Message("Moi", Smsg,new Timestamp(date.getTime())) );
                 if (Smsg.equals("end1")){
                     Oreille.interrupt();
                     break;

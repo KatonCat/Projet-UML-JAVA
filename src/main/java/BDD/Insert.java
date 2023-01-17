@@ -1,6 +1,8 @@
 package BDD;
 
 
+import Clavardage.Message;
+
 import java.sql.*;
 import java.util.Date;
 
@@ -30,17 +32,17 @@ public class Insert {
     /**
      * Insert a new row into the warehouses table
      *
-     * @param name
+     *
      * @param msg
      */
-    public void insert(String name, String msg, Timestamp Date) {
-        String sql = "INSERT INTO warehouses(name,capacity) VALUES(?,?,?)";
+    public void insert(String into,Message msg) {
+        String sql = "INSERT INTO "+into+"(pseudo,message,date) VALUES(?,?,?)";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, name);
-            pstmt.setString(2, msg);
-            pstmt.setTimestamp(3,Date);
+            pstmt.setString(1, msg.getUserName());
+            pstmt.setString(2, msg.getMsg());
+            pstmt.setTimestamp(3,msg.getDateTS());
             //pstmt.setString(3, DateFormatUtils.format(Date,"yyyy-MM-dd HH:mm:SS"));
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -51,14 +53,15 @@ public class Insert {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
 
         Insert app = new Insert();
         // insert three new rows
         Date date = new Date();
-        app.insert("Reven", "buenos dias hermano que pasa",new Timestamp(date.getTime()));
-        app.insert("Moi", "No tengo ni idea",new Timestamp(date.getTime()));
-        app.insert("Moi", "no pasa res",new Timestamp(date.getTime()));
+        app.insert("Reven",new Message("Reven","Nah de locos",new Timestamp(date.getTime())));
+        app.insert("Reven",new Message("Moi","JIJI",new Timestamp(date.getTime())));
+        app.insert("Reven",new Message("Reven","Nah de revens",new Timestamp(date.getTime())));
+        app.insert("Reven",new Message("Des","Que dius",new Timestamp(date.getTime())));
     }
-
+*/
 }

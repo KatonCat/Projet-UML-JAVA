@@ -1,7 +1,4 @@
 package Clavardage;
-
-import Connexion.RemoteUser;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,5 +12,9 @@ public class ListOfMessages {
 
     public void delMsg(Message msg) {
         message.remove(msg);
+    }
+
+    public List<Message> getMessage() {
+        return message;
     }
 }

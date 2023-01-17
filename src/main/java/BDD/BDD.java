@@ -1,18 +1,16 @@
 package BDD;
 
 
+import Clavardage.Message;
+
 import java.sql.*;
 
-/**
- *
- * @author sqlitetutorial.net
- */
 public class BDD {
 
     public static void createNewDatabase(String fileName) {
 
         String url = "jdbc:sqlite:DataBase/" + fileName;
-        try { Class.forName("org.sqlite.JDBC"); } catch(Exception e) {e.printStackTrace();};
+        //try { Class.forName("org.sqlite.JDBC"); } catch(Exception e) {e.printStackTrace();};
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
@@ -25,10 +23,7 @@ public class BDD {
         }
     }
 
-    /**
-     * Create a new table in the test database
-     *
-     */
+
     public static void createNewTable(String pseudo) {
         // SQLite connection string
         String url = "jdbc:sqlite:DataBase/CentralMessages.db";
@@ -38,7 +33,7 @@ public class BDD {
                 + "pseudo VARCHAR(255) NOT NULL,\n "
                 + " message VARCHAR(255) NOT NULL,\n "
                 + " date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n "
-                + " PRIMARY KEY ( pseudo ))";
+                + " PRIMARY KEY ( pseudo,message,date ))";
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
             // create a new table
@@ -48,7 +43,23 @@ public class BDD {
         }
     }
 
+    public static void insert(String into,Message msg) {
+        String sql = "INSERT INTO "+into+"(pseudo,message,date) VALUES(?,?,?)";
+        String url = "jdbc:sqlite:DataBase/CentralMessages.db";
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, msg.getUserName());
+            pstmt.setString(2, msg.getMsg());
+            pstmt.setTimestamp(3,msg.getDateTS());
+            //pstmt.setString(3, DateFormatUtils.format(Date,"yyyy-MM-dd HH:mm:SS"));
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
     public static void main(String[] args) {
-        createNewTable("Reven");
+        createNewTable("Pero");
     }
 }
