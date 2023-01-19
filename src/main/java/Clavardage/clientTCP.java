@@ -19,6 +19,12 @@ public class clientTCP {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 
+    public void getConnexion(Socket client) throws IOException {
+        this.clientSocket = client;
+        this.out = new PrintWriter(clientSocket.getOutputStream(), true);
+        this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    }
+
     public void sendMessage(String msg) {
         out.println(msg);
     }
