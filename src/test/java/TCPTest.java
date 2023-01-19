@@ -1,3 +1,4 @@
+import Clavardage.MultiServeurTCP;
 import Clavardage.clientTCP;
 
 import org.junit.Test;
@@ -11,6 +12,8 @@ public class TCPTest {
 
     @Test
     public void handshake() throws IOException {
+        MultiServeurTCP serveur = new MultiServeurTCP(1769);
+        serveur.start();
         clientTCP client = new clientTCP();
         client.startConnexion(InetAddress.getLocalHost(), 1769);
         client.sendMessage("hello dude");
