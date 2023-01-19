@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThreadList {
-    private List<ServeurTCP.ClientHandler> clientHandler = new ArrayList<>();
-    public void addThread(ServeurTCP.ClientHandler t){clientHandler.add(t);}
-    public void delThread(ServeurTCP.ClientHandler t){clientHandler.remove(t);}
-    public int findThread(String s){return  clientHandler.indexOf(s);}
-    public ServeurTCP.ClientHandler getThread(int i){return clientHandler.get(i);}
+    private List<Thread> threads = new ArrayList<>();
+    public void addThread(ServeurTCP.ClientHandler t){threads.add(t);}
+    public void delThread(ServeurTCP.ClientHandler t){threads.remove(t);}
+    public int findThread(String s){return  threads.indexOf(s);}
+    public Thread getThread(int i){return threads.get(i);}
     public int lengthListe(){
-        return clientHandler.size();
+        return threads.size();
     }
-    public List<ServeurTCP.ClientHandler> getList(){return clientHandler;}
+    public List<Thread> getList(){return threads;}
 }
 

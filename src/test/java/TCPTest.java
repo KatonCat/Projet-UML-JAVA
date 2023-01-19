@@ -1,6 +1,7 @@
 import Clavardage.MultiServeurTCP;
 import Clavardage.clientTCP;
 
+import ConnexionExceptions.UserNotFoundException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class TCPTest {
 
     @Test
-    public void handshake() throws IOException {
+    public void handshake() throws IOException, UserNotFoundException {
         MultiServeurTCP serveur = new MultiServeurTCP(1768);
         serveur.start();
         clientTCP client = new clientTCP();

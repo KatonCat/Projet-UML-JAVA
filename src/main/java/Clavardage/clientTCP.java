@@ -30,7 +30,7 @@ public class clientTCP {
 
     public void getConnexion(Socket client) throws IOException {
         this.clientSocket = client;
-        this.out = new PrintWriter(clientSocket.getOutputStream(), true);
+        this.out = new PrintWriter(clientSocket.getOutputStream(), true);;
         this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
 
@@ -48,4 +48,6 @@ public class clientTCP {
         out.close();
         clientSocket.close();
     }
+
+    public String getName(){return this.clientSocket.getInetAddress().getHostName();}
 }

@@ -5,8 +5,12 @@ import BDD.CreateBDD;
 import BDD.Insert;
 import Connexion.Ecoute;
 import ConnexionExceptions.UserNotFoundException;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,19 +22,19 @@ public class ServeurTCP extends Thread{
     private final int port;
     public ServeurTCP(int port){this.port = port;}
     public static ThreadList threadList= new ThreadList();
+    public static ListOfClients clientList = new ListOfClients();
     public void run(){
         ClientHandler thread;
         Socket socket;
         try {
-            //BDD.createNewDatabase("CentralMessages.db");
+            BDD.createNewDatabase("CentralMessages.db");
             serverSocket = new ServerSocket(port);
             while(true) {
                 thread = new ClientHandler(socket=serverSocket.accept());
                 thread.start();
-                thread.setName("127.0.0.1");
-                //System.out.println("setname reussi");
+                thread.setName(socket.getInetAddress().getHostName());
                 threadList.addThread(thread);
-                //System.out.println("add reussi");
+
 
             }
         } catch (IOException e) {
@@ -47,15 +51,18 @@ public class ServeurTCP extends Thread{
         private final Socket clientSocket;
         private final clientTCP client = new clientTCP();
 
+
         public ClientHandler(Socket socket) throws IOException {
             this.clientSocket = socket;
             this.client.getConnexion(this.clientSocket);
+            clientList.addClient(this.client);
         }
         public clientTCP getClient(){
             return this.client;
         }
 
         public void init() throws IOException, UserNotFoundException {
+
             InetAddress ip = clientSocket.getInetAddress();
             BDD.createNewTable("CentralMessages",ip.getHostAddress());
             //System.out.println(addr.getHostAddress() + " : " + response);
@@ -89,7 +96,8 @@ public class ServeurTCP extends Thread{
             try {
                 init();
                 client.stopConnexion();
-                clientSocket.close();
+                clientList.delClient(client);
+
             } catch (IOException | UserNotFoundException e) {
                 System.err.println("Could not initialize.");
                 e.printStackTrace();
