@@ -10,8 +10,8 @@ public class mainTest {
     public static void main(String args[]) throws IOException, ClassNotFoundException, UnknownHostException, InterruptedException {
        // new Ecoute().start();
        // new Connexion().verifyId();
-        MultiServeurTCP Server = new MultiServeurTCP();
-        Server.start(1769);
+        MultiServeurTCP Server = new MultiServeurTCP(1769);
+        Server.start();
        // StartSession.StartSession(InetAddress.getByName("127.0.0.1"));
     }
 }

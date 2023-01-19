@@ -3,29 +3,38 @@ package Clavardage;
 import BDD.BDD;
 import BDD.CreateBDD;
 import BDD.Insert;
+import ConnexionExceptions.UserNotFoundException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Scanner;
+import static Connexion.Ecoute.liste;
 
-public class MultiServeurTCP {
+public class MultiServeurTCP extends Thread{
     private ServerSocket serverSocket;
+    private final int port;
+    public MultiServeurTCP(int port){this.port = port;}
+    public void run(){
+        try {
+            //BDD.createNewDatabase("CentralMessages.db");
+            serverSocket = new ServerSocket(port);
 
-    public void start(int port) throws IOException {
-        CreateBDD.createNewDatabase("CentralMessages.db");
-        serverSocket = new ServerSocket(port);
-        while(true) {
-            new ClientHandler(serverSocket.accept()).start();
+            while(true) {
+                new ClientHandler(serverSocket.accept()).start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Could not create the server n/or accept.");
         }
-
     }
-    public void stop() throws IOException {
+    public void close() throws IOException {
         serverSocket.close();
     }
 
@@ -41,10 +50,14 @@ public class MultiServeurTCP {
         public static class ServEcoute extends Thread {
             final private Socket clientSocket;
             final private PrintWriter out;
-
-            public ServEcoute(Socket clientSocket, PrintWriter out) {
+            final private InetAddress addr;
+            //final private String pseudo;
+            public ServEcoute(Socket clientSocket, PrintWriter out) throws UserNotFoundException {
                 this.clientSocket = clientSocket;
                 this.out = out;
+                this.addr=clientSocket.getInetAddress();
+                //this.pseudo= liste.getUserByAdd(addr).getUserName() ;
+
             }
 
             public void run() {
@@ -52,14 +65,12 @@ public class MultiServeurTCP {
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     String msgRecu;
 
-                    Insert app = new Insert();
-
 
                     while (!this.isInterrupted()) {
 
                         if ((msgRecu = in.readLine()) == null) break;
                         Date date = new Date();
-                        app.insert("Pascal",new Message("PASCAL", msgRecu,new Timestamp(date.getTime())) );
+                        //BDD.insert("CentralMessages", addr.getHostAddress()+pseudo, new Message(pseudo, msgRecu,new Timestamp(date.getTime())) );
 
                         System.out.println(msgRecu);
                         if ("hello dude".equals(msgRecu)) {
@@ -83,8 +94,8 @@ public class MultiServeurTCP {
 
 
 
-        public void init() throws IOException {
-            BDD.createNewTable("Pascal");
+        public void init() throws IOException, UserNotFoundException {
+            //BDD.createNewTable("CentralMessages","Pascal");
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             ServEcoute Oreille = new ServEcoute(clientSocket,out);
@@ -99,8 +110,8 @@ public class MultiServeurTCP {
 
             while (!Oreille.isInterrupted()) {
                 Smsg = entreeClavier.nextLine();
-                 out.println(Smsg);
-                app.insert("Pascal",new Message("Moi", Smsg,new Timestamp(date.getTime())) );
+                out.println(Smsg);
+                //app.insert("Pascal",new Message("Moi", Smsg,new Timestamp(date.getTime())) );
                 if (Smsg.equals("end1")){
                     Oreille.interrupt();
                     break;
@@ -118,13 +129,15 @@ public class MultiServeurTCP {
                 in.close();
                 out.close();
                 clientSocket.close();
-            } catch (IOException e) {
+            } catch (IOException | UserNotFoundException e) {
                 System.err.println("Could not initialize.");
                 e.printStackTrace();
             }
         }
 
     }
+
+
 
 
 }

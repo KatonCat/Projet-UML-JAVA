@@ -1,6 +1,7 @@
 package BDD;
 
 
+import Clavardage.ListOfMessages;
 import Clavardage.Message;
 
 import java.sql.*;
@@ -24,9 +25,9 @@ public class BDD {
     }
 
 
-    public static void createNewTable(String pseudo) {
+    public static void createNewTable(String db,String pseudo) {
         // SQLite connection string
-        String url = "jdbc:sqlite:DataBase/CentralMessages.db";
+        String url = "jdbc:sqlite:DataBase/"+db+".db";
 
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS "+pseudo+"(\n"
@@ -43,9 +44,9 @@ public class BDD {
         }
     }
 
-    public static void insert(String into,Message msg) {
-        String sql = "INSERT INTO "+into+"(pseudo,message,date) VALUES(?,?,?)";
-        String url = "jdbc:sqlite:DataBase/CentralMessages.db";
+    public static void insert(String db,String table,Message msg) {
+        String sql = "INSERT INTO "+table+"(pseudo,message,date) VALUES(?,?,?)";
+        String url = "jdbc:sqlite:DataBase/"+db+".db";
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, msg.getUserName());
@@ -59,7 +60,42 @@ public class BDD {
     }
 
 
-    public static void main(String[] args) {
-        createNewTable("Pero");
+    public static void delete(String db,String table) {
+        String sql = "DELETE FROM "+table;
+        String url = "jdbc:sqlite:DataBase/"+db+".db";
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement()) {
+            // delete all
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
+
+    public static ListOfMessages select(String db,String Name){
+        String sql = "SELECT * FROM "+ Name;
+        String url = "jdbc:sqlite:DataBase/"+db+".db";
+        try {
+            Connection conn = DriverManager.getConnection(url);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            ListOfMessages ListeMsg= new ListOfMessages();
+            // loop through the result set
+            while (rs.next()) {
+                ListeMsg.addMsg(new Message(rs.getString("pseudo"),rs.getString("message"),rs.getTimestamp("Date")));
+            }
+            for (Message mess:ListeMsg.getMessage()) {
+                System.out.println(mess.getUserName() + "\t" +
+                        mess.getMsg() + "\t" +
+                        mess.getDateTS());
+            }
+            return ListeMsg;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return new ListOfMessages();
+
+
+    }
+
 }
