@@ -1,6 +1,7 @@
 package Clavardage;
 import BDD.BDD;
 import BDD.Insert;
+import Connexion.Ecoute;
 import ConnexionExceptions.UserNotFoundException;
 
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Scanner;
 
-import static Connexion.Ecoute.liste;
+
 
 public class StartSession extends Thread{
     private InetAddress addr;
@@ -17,7 +18,7 @@ public class StartSession extends Thread{
     private clientTCP client = new clientTCP();
     public StartSession(InetAddress addr) throws UserNotFoundException {
         this.addr = addr;
-        //this.pseudo= liste.getUserByAdd(addr).getUserName();
+        this.pseudo= Ecoute.liste.getUserByAdd(addr).getUserName();
     }
     public clientTCP getClient(){
         return this.client;
@@ -56,7 +57,7 @@ public class StartSession extends Thread{
 
     public  void run(){
 
-        //BDD.createNewTable("CentralMessages", addr.getHostAddress()+pseudo);
+        BDD.createNewTable("CentralMessages", addr.getHostAddress());
         ListOfMessages ListeMsg= new ListOfMessages();
         Scanner entreeClavier = new Scanner(System.in);
         try {
@@ -67,7 +68,7 @@ public class StartSession extends Thread{
             System.out.println(addr.getHostAddress() + " : " + response);
             String MsgRecu;
             MsgRecu = client.rcvMessage();
-
+            Date date;
             while (!this.isInterrupted()) {
                 if(MsgRecu.equals("end1")) {
                     this.interrupt();
@@ -75,6 +76,8 @@ public class StartSession extends Thread{
                 }
                 System.out.println(MsgRecu);
                 MsgRecu = client.rcvMessage();
+                date= new Date();
+                BDD.insert("CentralClass",addr.getHostAddress(),new Message(pseudo,MsgRecu,new Timestamp(date.getTime())));
                 //ListeMsg.addMsg(new Message("Juan",msg, new Timestamp(date.getTime())));
             }
 
@@ -94,7 +97,7 @@ public class StartSession extends Thread{
             System.out.println("La connexion est finie");
             client.stopConnexion();
 
-        }catch (IOException e) {
+        }catch (IOException | UserNotFoundException e) {
             e.printStackTrace();
             System.err.println("Could not connect.");
         }

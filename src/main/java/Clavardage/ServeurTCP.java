@@ -3,11 +3,15 @@ package Clavardage;
 import BDD.BDD;
 import BDD.CreateBDD;
 import BDD.Insert;
+import Connexion.Ecoute;
 import ConnexionExceptions.UserNotFoundException;
 import java.io.IOException;
 
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class ServeurTCP extends Thread{
     private ServerSocket serverSocket;
@@ -52,9 +56,11 @@ public class ServeurTCP extends Thread{
         }
 
         public void init() throws IOException, UserNotFoundException {
-            //BDD.createNewTable("CentralMessages","Pascal");
+            InetAddress ip = clientSocket.getInetAddress();
+            BDD.createNewTable("CentralMessages",ip.getHostAddress());
             //System.out.println(addr.getHostAddress() + " : " + response);
             String MsgRecu;
+            Date date;
             MsgRecu = client.rcvMessage();
 
             while (!this.isInterrupted()) {
@@ -67,6 +73,9 @@ public class ServeurTCP extends Thread{
                 }
                 System.out.println(MsgRecu);
                 MsgRecu = client.rcvMessage();
+                date = new Date();
+                BDD.insert("CentralClass",ip.getHostAddress(),new Message(Ecoute.liste.getUserByAdd(ip).getUserName(),MsgRecu,new Timestamp(date.getTime())));
+
                 //ListeMsg.addMsg(new Message("Juan",msg, new Timestamp(date.getTime())));
             }
 
