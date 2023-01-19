@@ -12,10 +12,10 @@ public class TCPTest {
 
     @Test
     public void handshake() throws IOException {
-        MultiServeurTCP serveur = new MultiServeurTCP(1769);
+        MultiServeurTCP serveur = new MultiServeurTCP(1768);
         serveur.start();
         clientTCP client = new clientTCP();
-        client.startConnexion(InetAddress.getLocalHost(), 1769);
+        client.startConnexion(InetAddress.getLocalHost(), 1768);
         client.sendMessage("hello dude");
         String response = client.rcvMessage();
         assertEquals("hi mate", response);
