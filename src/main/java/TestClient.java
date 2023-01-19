@@ -18,8 +18,8 @@ public class TestClient {
         clientTCP client = Session.getClient();
         Scanner entreeClavier = new Scanner(System.in);
         while(true) {
-            String Smsg = entreeClavier.nextLine();
-            client.sendMessage(Smsg);
+            String msg = entreeClavier.nextLine();
+            client.sendMessage(msg);
         }
     }
 
