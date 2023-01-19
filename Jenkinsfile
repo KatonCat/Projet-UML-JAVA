@@ -5,13 +5,13 @@ pipeline {
         stage('Build') {
             steps {
                 git 'https://github.com/KatonCat/Projet-UML-JAVA.git'
-                sh './mvnw clean compile'
+                sh './mvn clean compile'
             }
         }
 
         stage('Test'){
             steps{
-                sh './mvnw test'
+                sh './mvn test'
             }
             post{
                 always{
