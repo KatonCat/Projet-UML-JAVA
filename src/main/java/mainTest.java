@@ -1,13 +1,8 @@
-import Clavardage.MultiServeurTCP;
 import Clavardage.ServeurTCP;
-import Clavardage.clientTCP;
-import Connexion.Connexion;
-import Connexion.Ecoute;
-import Clavardage.StartSession;
+import Clavardage.ClientTCP;
 import ConnexionExceptions.UserNotFoundException;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
@@ -21,7 +16,7 @@ public class mainTest {
         Scanner entreeClavier = new Scanner(System.in);
 
         System.out.println(ServeurTCP.clientList.lengthListe());
-        clientTCP client;
+        ClientTCP client;
 
         while(true){
             String msg = entreeClavier.nextLine();

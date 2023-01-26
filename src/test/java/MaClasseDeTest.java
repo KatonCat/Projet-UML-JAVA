@@ -19,7 +19,7 @@ public class MaClasseDeTest {
 
 
     @Test
-     public void addUserTest() throws UnknownHostException {
+    public void addUserTest() throws UnknownHostException {
         InetAddress address = InetAddress.getByName("25.25.78.168");
         RemoteUser u1 = new RemoteUser("toto" ,  address);
 
@@ -42,7 +42,7 @@ public class MaClasseDeTest {
 
         assert liste.verifyUserNamePresent("toto");
         try {
-        assert liste.getUserByAdd(address).equals(u1);
+            assert liste.getUserByAdd(address).equals(u1);
         }
         catch(UserNotFoundException e)
         {

@@ -1,4 +1,4 @@
-package BDD;
+package DataBase;
 
 
 import Clavardage.ListOfMessages;
@@ -11,7 +11,6 @@ public class BDD {
     public static void createNewDatabase(String fileName) {
 
         String url = "jdbc:sqlite:DataBase/" + fileName;
-        //try { Class.forName("org.sqlite.JDBC"); } catch(Exception e) {e.printStackTrace();};
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
@@ -39,6 +38,7 @@ public class BDD {
              Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(sql);
+            System.out.println("A new database table has been created : "+pseudo);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -47,6 +47,7 @@ public class BDD {
     public static void insert(String db,String table,Message msg) {
         String sql = "INSERT INTO "+table+"(pseudo,message,date) VALUES(?,?,?)";
         String url = "jdbc:sqlite:DataBase/"+db+".db";
+        System.out.println("try inser in : "+table);
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, msg.getUserName());
@@ -54,6 +55,7 @@ public class BDD {
             pstmt.setTimestamp(3,msg.getDateTS());
             //pstmt.setString(3, DateFormatUtils.format(Date,"yyyy-MM-dd HH:mm:SS"));
             pstmt.executeUpdate();
+            System.out.println("A new message has been inserted in : "+table);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
