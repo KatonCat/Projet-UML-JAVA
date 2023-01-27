@@ -1,9 +1,6 @@
 package Interface;
 
-import Clavardage.ClientTCP;
-import Clavardage.Message;
-import Clavardage.ServeurTCP;
-import Clavardage.StartSession;
+import Clavardage.*;
 import Connexion.Ecoute;
 import Connexion.RemoteUser;
 import Connexion.UDP;
@@ -14,10 +11,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
@@ -41,6 +37,7 @@ public class MainWindowController {
     private StartSession session;
 
     private ServeurTCP.ClientHandler handler;
+
     @FXML
     private TextField messageUtil;
 
@@ -75,6 +72,8 @@ public class MainWindowController {
     private TableColumn<Message, String> messages;
     private String message;
     private Connection connection = null;
+
+
     @FXML
     private void initialize() {
         instance = this;
@@ -85,14 +84,13 @@ public class MainWindowController {
         ServeurTCP.handlerList.getList().addListener((ListChangeListener<ServeurTCP.ClientHandler>) changeNew -> {
             while (changeNew.next()) {
                 if (changeNew.wasAdded()) {
-                    ServeurTCP.ClientHandler lastHandler =ServeurTCP.handlerList.getLast();
+                    ServeurTCP.ClientHandler lastHandler = ServeurTCP.handlerList.getLast();
                     InetAddress addr=lastHandler.getAddress();
                     try {
                         String pseudo = Ecoute.liste.getUserByAdd(addr).getUserName();
                         String tableName =pseudo+addr.getHostAddress().replace(".","_");
 
                         BDD.createNewTable("CentralMessages", tableName );
-                        Thread.sleep(500);
 
                         lastHandler.listeMsg.getMessage().addListener((ListChangeListener<Message>) change -> {
 
@@ -100,7 +98,6 @@ public class MainWindowController {
                                 if (change.wasAdded()) {
 
                                     if(!lastHandler.listeMsg.getLast().getUserName().equals("Moi")) {
-                                        System.out.println("Il rentre bien dans le if");
                                         BDD.insert("CentralMessages", tableName, lastHandler.listeMsg.getLast());
                                     }
 
@@ -108,14 +105,15 @@ public class MainWindowController {
                             }
                         });
 
-
-                    } catch (UserNotFoundException | InterruptedException e) {
+                    } catch (UserNotFoundException e) {
                         e.printStackTrace();
                     }
                 }
 
             }
         });
+
+
         onlineUsersList.setOnMouseClicked(event ->{
            selectedUser = onlineUsersList.getSelectionModel().getSelectedItem();
            String addr = selectedUser.getAdd().getHostAddress();
@@ -125,33 +123,13 @@ public class MainWindowController {
                         BDD.createNewTable("CentralMessages" , tableName);
                         session = new StartSession(selectedUser.getAdd());
                         session.start();
-
-                        session.listeMsg = BDD.select("CentralMessages", selectedUser.getUserName()+selectedUser.getAdd().getHostAddress().replace(".","_"));
-                        msgs = FXCollections.observableArrayList();
-                        messagesTable.setItems(msgs);
-                        messages.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUserName() + " " + cellData.getValue().getMsg() + " " + cellData.getValue().getDateTS()));
-                        messagesTable.setItems(session.listeMsg.getMessage());
-                        session.listeMsg.getMessage().addListener((ListChangeListener<Message>) change -> {
-
-                            while (change.next()) {
-                                if (change.wasAdded()) {
-
-                                    if(!session.listeMsg.getLast().getUserName().equals("Moi")) {
-                                        BDD.insert("CentralMessages", tableName, session.listeMsg.getLast());
-                                    }
-
-                                }
-                            }
-                        });
+                        setTextVisible();
+                        setListener(tableName, session.listeMsg);
 
                     }
                     else if(ServeurTCP.sessionList.findSession(addr)!=-1){
                         session = ServeurTCP.sessionList.getSession(ServeurTCP.sessionList.findSession(selectedUser.getAdd().getHostAddress()));
-                        session.listeMsg = BDD.select("CentralMessages", selectedUser.getUserName()+selectedUser.getAdd().getHostAddress().replace(".","_"));
-                        msgs = FXCollections.observableArrayList();
-                        messagesTable.setItems(msgs);
-                        messages.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUserName() + " " + cellData.getValue().getMsg() + " " + cellData.getValue().getDateTS()));
-                        messagesTable.setItems(session.listeMsg.getMessage());
+                        setTextVisible();
 
                     }
                     else{
@@ -162,6 +140,7 @@ public class MainWindowController {
                         messagesTable.setItems(msgs);
                         messages.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUserName() + " " + cellData.getValue().getMsg() + " " + cellData.getValue().getDateTS()));
                         messagesTable.setItems(handler.listeMsg.getMessage());
+                        setListener(tableName, handler.listeMsg);
 
 
                     }
@@ -172,23 +151,22 @@ public class MainWindowController {
 
         }
 
-    @FXML
-    void setVisible(ActionEvent event) {
-        userNameFieled.setVisible(true);
+    private void setListener(String tableName, ListOfMessages listeMsg) {
+        listeMsg.getMessage().addListener((ListChangeListener<Message>) change -> {
+
+            while (change.next()) {
+                if (change.wasAdded()) {
+
+                    if(!listeMsg.getLast().getUserName().equals("Moi")) {
+                        BDD.insert("CentralMessages", tableName, listeMsg.getLast());
+                    }
+
+                }
+            }
+        });
     }
 
-    @FXML
-    void changeUsername(ActionEvent event) throws IOException {
-        SceneData sd = (SceneData) App.getStage().getUserData();
-        Ecoute ecoute = sd.getData1();
-        Ecoute.liste =  new UserList();
-        String userName = newUserName.getText();
-        ecoute.getConnexion().changePseudo(userName);
-        App.getStage().setTitle("home -"+userName);
-    }
-
-    @FXML
-    void logout(ActionEvent event) throws IOException {
+    private void closeAll() throws IOException {
         SceneData sd = (SceneData) App.getStage().getUserData();
         Ecoute ecoute = sd.getData1();
         ServeurTCP server = sd.getData2();
@@ -197,22 +175,44 @@ public class MainWindowController {
         ecoute.stopSocket();
         Ecoute.liste.clear();
         server.close();
+    }
 
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("welcome.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(fxmlLoader.load(),580, 340);
-        stage.setScene(scene);
-        stage.setTitle("java app");
-        stage.show();
+    private void setTextVisible() {
+        session.listeMsg = BDD.select("CentralMessages", selectedUser.getUserName()+selectedUser.getAdd().getHostAddress().replace(".","_"));
+        msgs = FXCollections.observableArrayList();
+        messagesTable.setItems(msgs);
+        messages.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUserName() + " " + cellData.getValue().getMsg() + " " + cellData.getValue().getDateTS()));
+        messagesTable.setItems(session.listeMsg.getMessage());
     }
 
     @FXML
-    void SendMessage(ActionEvent event) throws UserNotFoundException {
+    void setVisible() {
+        userNameFieled.setVisible(true);
+    }
+
+    @FXML
+    void changeUsername() throws IOException {
+        SceneData sd = (SceneData) App.getStage().getUserData();
+        Ecoute ecoute = sd.getData1();
+        Ecoute.liste =  new UserList();
+        String userName = newUserName.getText();
+        ecoute.getConnexion().changePseudo(userName);
+        App.getStage().setTitle("home -"+userName);
+        newUserName.clear();
+    }
+
+    @FXML
+    void logout() throws IOException {
+        closeAll();
+        App.getStage().close();
+
+    }
+
+    @FXML
+    void SendMessage(){
         int  index =ServeurTCP.clientList.findClient(selectedUser.getAdd().getHostAddress());
         ClientTCP client;
         String username =selectedUser.getUserName();
-        String address =selectedUser.getAdd().getHostAddress();
         message = messageUtil.getText();
         if(index==-1){
             client = session.getClient();

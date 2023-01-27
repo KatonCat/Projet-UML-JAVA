@@ -4,6 +4,7 @@ import Clavardage.ServeurTCP;
 import Connexion.ConnectionListener;
 import Connexion.Connexion;
 import Connexion.Ecoute;
+import Connexion.UDP;
 import ConnexionExceptions.UserNotFoundException;
 import DataBase.BDD;
 import javafx.event.ActionEvent;
@@ -18,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
 
 public class WelcomeControler {
@@ -91,6 +93,19 @@ public class WelcomeControler {
 
             stage.setUserData(new SceneData(ecoute ,server));
             BDD.createNewDatabase("CentralMessages.db");
+
+            stage.setOnCloseRequest(event -> {
+                try {
+                    SceneData sd = (SceneData) App.getStage().getUserData();
+                    UDP.broadcast("end" , InetAddress.getByName("255.255.255.255"));
+                    ecoute.interrupt();
+                    ecoute.stopSocket();
+                    Ecoute.liste.clear();
+                    server.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
 
 
