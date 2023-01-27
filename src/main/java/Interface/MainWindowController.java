@@ -118,6 +118,8 @@ public class MainWindowController {
            selectedUser = onlineUsersList.getSelectionModel().getSelectedItem();
            String addr = selectedUser.getAdd().getHostAddress();
                 if (selectedUser != null){
+                    sendButton.setVisible(true);
+                    messageUtil.setVisible(true);
                     String tableName=selectedUser.getUserName()+selectedUser.getAdd().getHostAddress().replace(".","_");
                     if (ServeurTCP.clientList.findClient(addr)==-1 && ServeurTCP.sessionList.findSession(addr)==-1) {
                         BDD.createNewTable("CentralMessages" , tableName);
@@ -147,6 +149,7 @@ public class MainWindowController {
 
 
                 }
+
         });
 
         }

@@ -23,8 +23,8 @@
             </TableView>
          </children>
       </AnchorPane>
-      <TextField fx:id="messageUtil" layoutX="184.0" layoutY="266.0" prefHeight="25.0" prefWidth="338.0" promptText="Enter your message" />
-      <Button fx:id="sendButton" layoutX="524.0" layoutY="266.0" mnemonicParsing="false" onAction="#SendMessage" prefHeight="25.0" prefWidth="57.0" text="Send" />
+      <TextField fx:id="messageUtil" layoutX="184.0" layoutY="266.0" prefHeight="25.0" prefWidth="338.0" promptText="Enter your message" visible="false" />
+      <Button fx:id="sendButton" layoutX="524.0" layoutY="266.0" mnemonicParsing="false" onAction="#SendMessage" prefHeight="25.0" prefWidth="57.0" text="Send"  visible="false"  />
       <TableView fx:id="messagesTable" layoutX="184.0" layoutY="30.0" prefHeight="235.0" prefWidth="397.0">
         <columns>
           <TableColumn fx:id="messages" prefWidth="396.0" />
