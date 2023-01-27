@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Interface.MainWindowController">
+   <children>
+      <ImageView fitHeight="426.0" fitWidth="681.0" layoutX="-11.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@0bd6ad02534224ec76d161291dbde75a.jpg" />
+         </image>
+      </ImageView>
+      <Button fx:id="logoutButton" layoutX="461.0" layoutY="312.0" mnemonicParsing="false" onAction="#logout" prefHeight="25.0" prefWidth="120.0" text="Log out" />
+      <Button fx:id="changeUsernameButton" layoutY="312.0" mnemonicParsing="false" onAction="#changeUsername" onDragOver="#setVisible" prefHeight="25.0" prefWidth="157.0" text="Change username" />
+      <AnchorPane layoutX="7.0" layoutY="8.0" prefHeight="200.0" prefWidth="151.0">
+         <children>
+            <TableView fx:id="onlineUsersList" layoutX="1.0" layoutY="20.0" prefHeight="263.0" prefWidth="151.0">
+               <columns>
+                  <TableColumn fx:id="onlineUsersTable" prefWidth="149.0" text="List of users" />
+                  <TableColumn prefWidth="75.0" text="Column X" />
+               </columns>
+            </TableView>
+         </children>
+      </AnchorPane>
+      <TextField fx:id="messageUtil" layoutX="184.0" layoutY="266.0" prefHeight="25.0" prefWidth="338.0" promptText="Enter your message" />
+      <Button fx:id="sendButton" layoutX="524.0" layoutY="266.0" mnemonicParsing="false" onAction="#SendMessage" prefHeight="25.0" prefWidth="57.0" text="Send" />
+      <TableView fx:id="messagesTable" layoutX="184.0" layoutY="30.0" prefHeight="235.0" prefWidth="397.0">
+        <columns>
+          <TableColumn fx:id="messages" prefWidth="396.0" />
+        </columns>
+      </TableView>
+      <TextField fx:id="userNameFieled" layoutX="118.0" layoutY="312.0" promptText="Enter new user name" visible="false" />
+      <TextField fx:id="newUserName" layoutX="166.0" layoutY="312.0" prefHeight="26.0" prefWidth="177.0" promptText="choose a new UserName" />
+   </children>
+</AnchorPane>
