@@ -17,6 +17,7 @@ Si vous êtes a l'INSA et/ou Maven n'est pas installés il vous faut le téléch
 Pour lancer l'application il vous faut vous placer là où se trouve le pom.xml.
 
 Les commandes qu'on a utilisées afin de le lancer sont les suivantes :
+
     - export PATH=/home/nomUtilisateur/maven/bin:$PATH (à changer en fonction de l'emplacement de votre maven)
     - mvn compile && mvn exec:java -Dexec.mainClass="Interface.App"
     
