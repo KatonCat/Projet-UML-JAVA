@@ -1,15 +1,13 @@
 package Clavardage;
 
 import Connexion.Ecoute;
-import ConnexionExceptions.UserNotFoundException;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.Timestamp;
 
 public class StartSession extends Thread{
-    private InetAddress addr;
-    private ClientTCP client = new ClientTCP();
+    private final InetAddress addr;
+    private final ClientTCP client = new ClientTCP();
     public StartSession(InetAddress addr) {
         this.addr = addr;
         ServeurTCP.sessionList.addSession(this);
@@ -29,7 +27,7 @@ public class StartSession extends Thread{
             client.startConnexion(addr, 1769);
             client.sendMessage("hello dude");
             String response = client.rcvMessage();
-            String pseudo = Ecoute.liste.getUserByAdd(addr).getUserName();
+            System.out.println(Ecoute.liste.toString());
             System.out.println(addr.getHostAddress() + " : " + response);
             String MsgRecu;
             MsgRecu = client.rcvMessage();
@@ -37,9 +35,9 @@ public class StartSession extends Thread{
             while (!this.isInterrupted()) {
 
                 System.out.println(MsgRecu);
-                listeMsg.addMsg(new Message(pseudo,MsgRecu,new Timestamp(System.currentTimeMillis())));
+                listeMsg.addMsg(new Message(addr.getHostAddress(), MsgRecu, new Timestamp(System.currentTimeMillis())));
                 MsgRecu = client.rcvMessage();
-                if(MsgRecu.equals("end1")) {
+                if (MsgRecu.equals("end1")) {
                     this.interrupt();
                     System.out.println("La connexion est finie, veuillez appuyer sur entrée");
                 }
@@ -48,10 +46,11 @@ public class StartSession extends Thread{
             System.out.println("La connexion est finie");
             client.stopConnexion();
 
-        }catch (IOException | UserNotFoundException e) {
+        }catch (IOException e) {
             e.printStackTrace();
             System.err.println("Could not connect.");
         }
+        listeMsg.clear();
         ServeurTCP.sessionList.delSession(this);
     }
 }

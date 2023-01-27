@@ -31,8 +31,6 @@ public class WelcomeControler {
     @FXML
     private TextField userNameText;
 
-    @FXML
-    private Button connexionBotton;
 
     @FXML
     private Text messageToUser;

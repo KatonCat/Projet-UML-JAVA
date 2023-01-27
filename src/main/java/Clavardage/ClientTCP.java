@@ -1,8 +1,5 @@
 package Clavardage;
 
-import Connexion.Ecoute;
-import ConnexionExceptions.UserNotFoundException;
-import DataBase.BDD;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.sql.Timestamp;
 
 
 public class ClientTCP {

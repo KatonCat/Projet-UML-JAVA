@@ -1,6 +1,5 @@
 import Clavardage.ServeurTCP;
 import Clavardage.ClientTCP;
-import ConnexionExceptions.UserNotFoundException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class TCPTest {
 
     @Test
-    public void handshake() throws IOException, UserNotFoundException {
+    public void handshake() throws IOException, InterruptedException {
         ServeurTCP serv = new ServeurTCP(1769);
         serv.start();
         ClientTCP client = new ClientTCP();
@@ -29,6 +28,20 @@ public class TCPTest {
         assertEquals("hi mate", response);
         assertEquals("hi mate", response2);
         assertEquals("hi mate", response3);
+        assertEquals(serv.clientList.lengthListe(),3);
+        client.sendMessage("Nice");
+        client.sendMessage("end1");
+        Thread.sleep(5000);
+        assertEquals(serv.clientList.lengthListe(),2);
+        client2.sendMessage("Nice");
+        client2.sendMessage("end1");
+        Thread.sleep(5000);
+        assertEquals(serv.clientList.lengthListe(),1);
+        client3.sendMessage("Nice");
+        client3.sendMessage("end1");
+        Thread.sleep(5000);
+        assertEquals(serv.clientList.lengthListe(),0);
+
     }
 
 

@@ -32,6 +32,16 @@ public class UserList {
         throw new UserNotFoundException("User not found");
     }
 
+    public String getUserNameByAdd(String add) throws UserNotFoundException {
+        int i;
+        for (i = 0; i < users.size(); i++) {
+            if ((users.get(i)).getAdd().getHostAddress().equals(add))
+                return users.get(i).getUserName();
+        }
+        throw new UserNotFoundException("User not found");
+    }
+
+
     public ObservableList<RemoteUser>  getUsers (){
         return this.users;
     }
@@ -50,23 +60,13 @@ public class UserList {
     public List<String> getids() throws UserNotFoundException{
         List<String> userids = new ArrayList<>();
         if (!users.isEmpty() ){
-            //System.out.println("hhhhh");
            for(int i = 0; i < users.size(); i++)
                 userids.add(((users.get(i)).getUserName()));
            return userids;
         }
         else
-        throw new UserNotFoundException("the list is empty");
+            throw new UserNotFoundException("the list is empty");
     }
-
-    @Override
-    public String toString() {
-        return "UserList{" +
-                "users=" + users +
-                '}';
-    }
-
-
 
 
 }

@@ -2,10 +2,6 @@ import DataBase.*;
 import Clavardage.ListOfMessages;
 import Clavardage.Message;
 import org.junit.Test;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import static org.junit.Assert.assertEquals;

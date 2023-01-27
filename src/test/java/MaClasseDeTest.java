@@ -1,16 +1,8 @@
-import Connexion.Connexion;
-import Connexion.Ecoute;
-
 
 import ConnexionExceptions.UserNotFoundException;
 import org.junit.Test;
-
-import Connexion.Connexion;
-import Connexion.Ecoute;
 import Connexion.RemoteUser;
-
 import static Connexion.Ecoute.liste;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
